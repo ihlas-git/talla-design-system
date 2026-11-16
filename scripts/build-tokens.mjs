@@ -1,8 +1,9 @@
 // Builds src/styles/tokens.css and src/styles/tailwind-theme.css
 // from tokens/figma-snapshot.json (a snapshot of the Figma file "Talla").
 //
-// Names are taken strictly from each variable's Code syntax (WEB) in Figma.
-// Run: npm run tokens
+// CSS variable names are computed from the real Figma variable name (the `path` field), never from
+// Code syntax. The `cs` field (Code syntax) is only cross-checked: a mismatch prints a warning and
+// the computed name wins. Run: npm run tokens
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -16,8 +17,43 @@ const fail = (msg) => {
 }
 
 // ---------- helpers ----------
-/** `var(--x)` -> `--x`, otherwise null (the Code syntax is an expression, not a name). */
-const varName = (cs) => cs.match(/^var\((--[a-z0-9-]+)\)$/)?.[1] ?? null
+const warnings = []
+/** Compare the computed name with the Code syntax (`var(--x)`); warn on mismatch, never fail. */
+const check = (t, name, expectedCs = `var(${name})`) => {
+  if (t.cs !== expectedCs) warnings.push(`${t.path}: computed ${expectedCs}, Code syntax says ${t.cs}`)
+  return name
+}
+/** Drop the repeated last segment: bg.accent.emphasized.emphasized -> bg.accent.emphasized */
+const dropDupLeaf = (parts) => (parts.length > 1 && parts.at(-1) === parts.at(-2) ? parts.slice(0, -1) : parts)
+/** Drop any consecutive repeat: body.large.large.font-size -> body.large.font-size */
+const dropDups = (parts) => parts.filter((p, i, a) => p !== a[i - 1])
+
+const paletteName = (t) => check(t, '--color-' + t.path.split('.').join('-'))
+const themeName = (t) => check(t, '--' + dropDupLeaf(t.path.split('.')).join('-'))
+// Typography: one explicit exception, the family variable is exposed as Tailwind's --font-sans.
+const typoName = (t) =>
+  check(t, t.path === 'font.family' ? '--font-sans' : '--' + dropDups(t.path.split('.')).join('-'))
+// Number value: Tailwind namespaces differ from the Figma groups, so the mapping is a rule table.
+// null = not declared (Code syntax is a literal and the Tailwind default is identical).
+const numberName = (t) => {
+  const [group, kind, ...rest] = t.path.split('.')
+  if (group === 'border' || (group === 'radius' && (kind === 'full' || kind === 'none'))) return null
+  if (group === 'spacing') return kind === 'px' ? check(t, '--spacing-px') : undefined // undefined = calc(--spacing * N)
+  if (group === 'radius') return check(t, `--radius-${kind}`)
+  if (group === 'size') return check(t, `--container-${kind}`)
+  if (group === 'font') {
+    const size = rest[0]
+    const names = {
+      size: `--text-${size}`,
+      'line-height': `--text-${size}--line-height`,
+      'letter-spacing': `--text-${size}--letter-spacing`,
+      weight: `--font-weight-${size}`,
+    }
+    if (names[kind]) return check(t, names[kind])
+  }
+  warnings.push(`${t.path}: no naming rule, skipped`)
+  return null
+}
 
 /** Number -> short string without float noise (-0.36000001 -> -0.36). */
 const num = (n) => String(Number(n.toFixed(4)))
@@ -30,7 +66,7 @@ const line = (s = '') => out.push(s)
 
 // ---------- Palette ----------
 const paletteByRef = new Map() // "{palette.blue.100}" -> Code syntax value
-for (const t of snap.palette) paletteByRef.set(`{palette.${t.path}}`, t.cs)
+for (const t of snap.palette) paletteByRef.set(`{palette.${t.path}}`, `var(${paletteName(t)})`)
 
 // Same order as the Figma page: base, neutrals, then colors (steps keep their 50..950 order).
 const hueOrder = [
@@ -43,11 +79,9 @@ const hueRank = (t) => {
   return i === -1 ? hueOrder.length : i
 }
 const paletteNamed = snap.palette
-  .filter((t) => varName(t.cs))
   .map((t, i) => ({ t, i }))
   .sort((a, b) => hueRank(a.t) - hueRank(b.t) || a.i - b.i)
   .map(({ t }) => t)
-const paletteAlpha = snap.palette.filter((t) => !varName(t.cs))
 
 // ---------- Number value ----------
 const numberLines = []
@@ -55,9 +89,11 @@ const skippedNumbers = []
 let spacingBase = null
 for (const t of snap.numbers) {
   const value = t.modes.Value
-  const m = t.cs.match(/^calc\(var\(--spacing\) \* ([0-9.]+)\)$/)
-  if (m) {
-    const k = Number(m[1])
+  const name = numberName(t)
+  if (name === undefined) {
+    // spacing.N: the multiplier comes from the name itself (spacing.1-5 -> 1.5)
+    const k = Number(t.path.split('.')[1].replace('-', '.'))
+    check(t, null, `calc(var(--spacing) * ${k})`)
     if (k > 0) {
       const base = value / k
       if (spacingBase === null) spacingBase = base
@@ -65,7 +101,6 @@ for (const t of snap.numbers) {
     }
     continue // expressed through --spacing
   }
-  const name = varName(t.cs)
   if (!name) {
     skippedNumbers.push(`${t.path} (${t.cs})`)
     continue
@@ -86,11 +121,11 @@ const shadowLines = Object.entries(snap.shadows).map(([k, layers]) => [
 ])
 
 // ---------- Typography ----------
-const typoNames = new Set(snap.typography.map((t) => varName(t.cs)))
+const typoNames = new Set(snap.typography.map(typoName))
 const typoDesktop = []
 const typoMobile = []
 for (const t of snap.typography) {
-  const name = varName(t.cs)
+  const name = typoName(t)
   const fmt = (v) => {
     if (typeof v === 'string') return v
     if (name.endsWith('letter-spacing')) return px(v)
@@ -121,18 +156,24 @@ const rank = (cssVar) => {
   return [scope, role, prom, state]
 }
 const themeTokens = snap.theme
-  .map((t) => ({ ...t, name: varName(t.cs) }))
+  .map((t) => ({ ...t, name: themeName(t) }))
   .sort((a, b) => {
     const ra = rank(a.name)
     const rb = rank(b.name)
     for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return ra[i] - rb[i]
     return a.name.localeCompare(b.name)
   })
+// A mode value is either a plain alias "{palette.x.y}" or { ref, opacity } (opacity in %, set on the
+// Theme variable's fill in Figma). Translucent values become color-mix over the same Palette variable.
 const resolveTheme = (t, mode) => {
-  const ref = t.modes[mode]
+  const raw = t.modes[mode]
+  const ref = typeof raw === 'string' ? raw : raw?.ref
   const v = paletteByRef.get(ref)
   if (!v) fail(`${t.path} (${mode}) points to an unknown palette token: ${ref}`)
-  return v
+  if (typeof raw === 'string') return v
+  const o = Number(raw.opacity)
+  if (!(o >= 0 && o <= 100)) fail(`${t.path} (${mode}) has an invalid opacity: ${raw.opacity}`)
+  return o === 100 ? v : `color-mix(in oklab, ${v} ${num(o)}%, transparent)`
 }
 
 // ---------- Text styles ----------
@@ -152,7 +193,7 @@ line(' * GENERATED FILE. Do not edit by hand.')
 line(` * Source: Figma file "${snap.source.file}" (${snap.source.fileKey}), snapshot ${snap.source.exportedAt.slice(0, 10)}.`)
 line(' * Rebuild: npm run tokens')
 line(' *')
-line(' * Variable names come strictly from Code syntax (WEB) of the Figma variables.')
+line(' * Variable names are computed from the Figma variable names (Code syntax is only cross-checked).')
 line(' * Palette + Number value  -> @theme')
 line(' * Theme Light             -> :root,  Theme Dark -> .dark')
 line(' * Typography Desktop      -> :root,  Typography Mobile -> @media (max-width: 767px)')
@@ -175,7 +216,7 @@ for (const t of paletteNamed) {
     if (lastGroup) line()
     lastGroup = group
   }
-  line(`  ${varName(t.cs)}: ${hex(t.modes.Value)};`)
+  line(`  ${paletteName(t)}: ${hex(t.modes.Value)};`)
 }
 line()
 line('  /* ===== Number value ===== */')
@@ -295,9 +336,10 @@ tl('}')
 fs.writeFileSync(path.join(root, 'src/styles/tailwind-theme.css'), tw.join('\n') + '\n')
 
 console.log(
-  `tokens.css: palette ${paletteNamed.length} (+${paletteAlpha.length} alpha used inline by Theme), ` +
+  `tokens.css: palette ${paletteNamed.length} ` +
     `numbers ${numberLines.length + 1}, shadows ${shadowLines.length}, ` +
     `theme ${themeTokens.length} x2 modes, typography ${typoDesktop.length} (mobile overrides ${typoMobile.length}), ` +
     `text classes ${textClasses.length}`,
 )
+if (warnings.length) console.warn(`build-tokens: ${warnings.length} Code syntax warning(s):\n  ` + [...new Set(warnings)].join('\n  '))
 if (skippedNumbers.length) console.log('not declared (Code syntax is a literal, Tailwind default is identical):', skippedNumbers.join(', '))

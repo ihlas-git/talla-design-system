@@ -3,7 +3,7 @@
  * Source: Figma file "Talla" (gaLKdkheoiIoheOPNkCmi6), snapshot 2026-11-15.
  * Rebuild: npm run tokens
  *
- * Variable names come strictly from Code syntax (WEB) of the Figma variables.
+ * Variable names are computed from the Figma variable names (Code syntax is only cross-checked).
  * Palette + Number value  -> @theme
  * Theme Light             -> :root,  Theme Dark -> .dark
  * Typography Desktop      -> :root,  Typography Mobile -> @media (max-width: 767px)

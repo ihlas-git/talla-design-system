@@ -95,6 +95,7 @@ function Colors() {
                       <div className="caption mt-0.5 break-all text-fg-neutral-subtle">{t.twClass}</div>
                       <div className="caption mt-1 text-fg-neutral-subtle">
                         {cur.ref}
+                        {cur.opacity !== null && <span> · {cur.opacity}%</span>}
                         {cur.hex && <span> · {cur.hex}</span>}
                       </div>
                     </div>

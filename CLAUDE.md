@@ -21,7 +21,7 @@ Palette is documentation only (Storybook, Foundations / Palette). Check before c
 scope / role / [prominence] / [context] / [state]
 ```
 
-In CSS the parts are joined with `-`: `--bg-accent-emphasized-hover`. Names come from the **Code syntax** of the Figma variables. Never rename a token in code.
+In CSS the parts are joined with `-`: `--bg-accent-emphasized-hover`. Names are computed by the generator from the real Figma variable name (`bg/accent/emphasized/emphasized` → `--bg-accent-emphasized`, Palette gets the `--color-` prefix). **Code syntax** in Figma is only cross-checked: on a mismatch `npm run tokens` prints a warning and the computed name wins. Never rename a token in code.
 
 | Part | Values |
 | --- | --- |
@@ -76,9 +76,9 @@ Never write the doubled form (`--bg-neutral-neutral`) in code.
 - **Palette stores values. Theme selects appearance (Light / Dark). Components read Theme only.**
 - Light: `Theme/bg/neutral/neutral → Palette/slate/100`. Dark: `→ Palette/slate/900`.
 - Light is `:root`, Dark is `.dark` (add the class to `<html>`). Nothing in a component needs to know the mode.
-- **Transparency:** Figma cannot store an alias plus opacity, so translucent colors are Palette variables named `color-alpha/{hue}/{step}-{opacity}` and Theme stores plain aliases to them. Example: `stroke/neutral/subtle → Palette/color-alpha/slate/950-10`.
-- In CSS an alpha token is `color-mix(in oklab, var(--color-slate-950) 10%, transparent)`.
-- Alpha scale: 05 · 10 · 15 · 20 · 30 · 40 · 50 · 60 · 70 · 80. Only combinations used by Theme exist.
+- **Transparency:** there are no alpha tokens in Palette. A translucent Theme token aliases the plain Palette color (no opacity in the name) and the opacity is set on the Theme variable itself in Figma. Example: `ghost/neutral/hover → Palette/slate/950` at 5% (Light), `Palette/white` at 10% (Dark).
+- In the snapshot a mode value is `"{palette.slate.950}"` (opaque) or `{ "ref": "{palette.slate.950}", "opacity": 5 }`. In CSS it becomes `color-mix(in oklab, var(--color-slate-950) 5%, transparent)` (generated, never written by hand).
+- Opacity steps used: 5, 10, 15, 20, 30, 40, 50, 60, 70, 80.
 - Palette is hidden from property pickers in Figma. Designers pick Theme tokens only. Developers do the same.
 
 ## Contrast contract: WCAG 2.2 AA

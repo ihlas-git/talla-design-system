@@ -2,7 +2,7 @@
 // so the Foundations pages can never drift from the real tokens.
 import snapshot from '../../tokens/figma-snapshot.json'
 
-type Raw = { path: string; cs: string; type: string; modes: Record<string, string | number> }
+type Raw = { path: string; cs: string; type: string; modes: Record<string, string | number | { ref: string; opacity: number }> }
 const snap = snapshot as unknown as {
   palette: Raw[]
   numbers: Raw[]
@@ -23,7 +23,7 @@ export const paletteGroups: PaletteGroup[] = (() => {
   const groups = new Map<string, PaletteStep[]>()
   for (const t of snap.palette) {
     const name = cssVar(t.cs)
-    if (!name) continue // alpha tokens are listed separately
+    if (!name) continue
     const [hue, step] = t.path.includes('.') ? t.path.split('.') : ['base', t.path]
     if (!groups.has(hue)) groups.set(hue, [])
     groups.get(hue)!.push({ step, cssVar: name, hex: String(t.modes.Value).toUpperCase() })
@@ -38,11 +38,6 @@ export const paletteGroups: PaletteGroup[] = (() => {
   return [...groups].sort((a, b) => at(a[0]) - at(b[0])).map(([hue, steps]) => ({ hue, steps }))
 })()
 
-export type AlphaToken = { path: string; expression: string; hex8: string }
-export const alphaTokens: AlphaToken[] = snap.palette
-  .filter((t) => !cssVar(t.cs))
-  .map((t) => ({ path: t.path.replace('color-alpha.', ''), expression: t.cs, hex8: String(t.modes.Value).toUpperCase() }))
-
 const paletteByRef = new Map(snap.palette.map((t) => [`{palette.${t.path}}`, t]))
 const refLabel = (ref: string) => ref.replace('{palette.', '').replace('}', '').replace(/\./g, '/')
 
@@ -51,8 +46,8 @@ export type ThemeToken = {
   cssVar: string
   /** Tailwind class that reads this token. */
   twClass: string
-  light: { ref: string; hex: string }
-  dark: { ref: string; hex: string }
+  light: { ref: string; opacity: number | null; hex: string }
+  dark: { ref: string; opacity: number | null; hex: string }
 }
 export type ThemeGroup = { scope: string; tokens: ThemeToken[] }
 
@@ -68,9 +63,11 @@ const twClass = (name: string) => {
 }
 
 const resolve = (t: Raw, mode: 'Light' | 'Dark') => {
-  const ref = String(t.modes[mode])
+  const raw = t.modes[mode]
+  const ref = typeof raw === 'object' ? raw.ref : String(raw)
+  const opacity = typeof raw === 'object' ? raw.opacity : null
   const p = paletteByRef.get(ref)
-  return { ref: refLabel(ref), hex: p ? String(p.modes.Value).toUpperCase() : '' }
+  return { ref: refLabel(ref), opacity, hex: p ? String(p.modes.Value).toUpperCase() : '' }
 }
 
 const scopeOrder = ['surface', 'bg', 'card', 'form', 'ghost', 'fg', 'stroke', 'focus']
