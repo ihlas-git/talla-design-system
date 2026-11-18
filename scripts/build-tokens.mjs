@@ -122,12 +122,32 @@ const shadowLines = Object.entries(snap.shadows).map(([k, layers]) => [
 
 // ---------- Typography ----------
 const typoNames = new Set(snap.typography.map(typoName))
+// Link typography to Number value: a typography value that equals exactly one Number token of the same
+// kind becomes var(--text-base) instead of a copied number (the snapshot stores resolved numbers, not aliases).
+const numberByValue = { 'font-size': new Map(), 'line-height': new Map(), 'letter-spacing': new Map() }
+for (const t of snap.numbers) {
+  const m = t.path.match(/^font\.(size|line-height|letter-spacing)\./)
+  if (!m) continue
+  const map = numberByValue[m[1] === 'size' ? 'font-size' : m[1]]
+  map.set(t.modes.Value, [...(map.get(t.modes.Value) ?? []), numberName(t)])
+}
+// Two Number tokens can hold the same value (line-height 28 is both lg and xl). The snapshot has no alias to
+// tell them apart, so the choice is written here: kind -> value -> the Number token to link to.
+const preferLink = { 'line-height': { 28: '--text-lg--line-height' } }
+const unlinked = []
 const typoDesktop = []
 const typoMobile = []
 for (const t of snap.typography) {
   const name = typoName(t)
+  const kind = t.path.split('.').pop()
   const fmt = (v) => {
     if (typeof v === 'string') return v
+    const all = numberByValue[kind]?.get(v) ?? []
+    const pick = preferLink[kind]?.[v]
+    if (pick && !all.includes(pick)) fail(`preferLink ${kind}=${v}: ${pick} does not hold that value`)
+    const hits = pick ? [pick] : all
+    if (hits.length === 1) return `var(${hits[0]})`
+    unlinked.push(`${name}=${num(v)} (${hits.length ? 'ambiguous: ' + hits.join(', ') : 'no Number token'})`)
     if (name.endsWith('letter-spacing')) return px(v)
     return rem(v)
   }
@@ -331,4 +351,5 @@ console.log(
     `text classes ${textClasses.length}`,
 )
 if (warnings.length) console.warn(`build-tokens: ${warnings.length} Code syntax warning(s):\n  ` + [...new Set(warnings)].join('\n  '))
+if (unlinked.length) console.log('typography kept as literal (not linked to Number value):', [...new Set(unlinked)].join('; '))
 if (skippedNumbers.length) console.log('not declared (Code syntax is a literal, Tailwind default is identical):', skippedNumbers.join(', '))
