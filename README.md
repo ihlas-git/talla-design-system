@@ -20,7 +20,7 @@ The toolbar also has a global Light / Dark switch for every story.
 | --- | --- |
 | `npm run storybook` | Docs and component playground |
 | `npm run build-storybook` | Static Storybook in `storybook-static/` |
-| `npm run tokens` | Rebuilds `src/styles/tokens.css` and `tailwind-theme.css` from `tokens/figma-snapshot.json` |
+| `npm run tokens` | Rebuilds `src/styles/tokens.css` from `tokens/figma-snapshot.json` |
 | `npm run check:tokens` | Fails if components use Palette colors or hex |
 | `npm run build` | Typecheck and production build |
 | `npm run lint` | oxlint |
@@ -41,7 +41,7 @@ Variable names come strictly from the **Code syntax** of the Figma variables.
 
 Theme tokens are wired into Tailwind, so classes like `bg-accent-emphasized` and `text-fg-neutral-subtle` work and follow the mode automatically.
 
-`tokens.css` and `tailwind-theme.css` are generated: do not edit them by hand. To update, change the variables in Figma, refresh `tokens/figma-snapshot.json`, run `npm run tokens`.
+`tokens.css` is generated: do not edit it by hand. To update, change the variables in Figma, refresh `tokens/figma-snapshot.json`, run `npm run tokens`.
 
 ## Rules
 

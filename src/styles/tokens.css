@@ -1,17 +1,21 @@
 /*
  * GENERATED FILE. Do not edit by hand.
- * Source: Figma file "Talla" (gaLKdkheoiIoheOPNkCmi6), snapshot 2026-11-15.
+ * Source: Figma file "Talla" (gaLKdkheoiIoheOPNkCmi6), snapshot 2026-11-17.
  * Rebuild: npm run tokens
  *
  * Variable names are computed from the Figma variable names (Code syntax is only cross-checked).
- * Palette + Number value  -> @theme
+ * Palette + Number value  -> @theme static (every variable stays in the output)
  * Theme Light             -> :root,  Theme Dark -> .dark
+ * Theme -> Tailwind        -> @theme inline (--bg-accent-emphasized -> class bg-accent-emphasized)
  * Typography Desktop      -> :root,  Typography Mobile -> @media (max-width: 767px)
  * Text styles             -> CSS classes (.heading-large, .body-small ...)
  * Effect styles           -> --shadow-*
  *
  * Components use Theme tokens only. Palette values are never used directly.
  */
+
+/* Dark mode is the `.dark` class on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* `static` keeps every variable in the output, even ones no class uses yet. */
 @theme static {
@@ -335,6 +339,18 @@
   --color-rose-900: #8b0836;
   --color-rose-950: #4d0218;
 
+  --color-haze-50: #fafaff;
+  --color-haze-100: #f3f3f9;
+  --color-haze-200: #e4e4eb;
+  --color-haze-300: #d4d3dc;
+  --color-haze-400: #9f9fa9;
+  --color-haze-500: #71717b;
+  --color-haze-600: #52525b;
+  --color-haze-700: #3f3f46;
+  --color-haze-800: #27272c;
+  --color-haze-900: #18181c;
+  --color-haze-950: #09090c;
+
   /* ===== Number value ===== */
   --spacing: 0.25rem;
 
@@ -422,28 +438,28 @@
 :root {
   color-scheme: light;
 
-  --surface: var(--color-slate-100);
+  --surface: var(--color-haze-50);
   --surface-backdrop: color-mix(in oklab, var(--color-black) 50%, transparent);
 
-  --bg-disabled: color-mix(in oklab, var(--color-slate-950) 5%, transparent);
-  --bg-neutral-subtle: var(--color-slate-50);
-  --bg-neutral-subtle-hover: var(--color-slate-100);
-  --bg-neutral-subtle-pressed: var(--color-slate-200);
-  --bg-neutral: var(--color-slate-100);
-  --bg-neutral-hover: var(--color-slate-200);
-  --bg-neutral-pressed: var(--color-slate-300);
-  --bg-neutral-emphasized: var(--color-slate-600);
-  --bg-neutral-emphasized-hover: var(--color-slate-700);
-  --bg-neutral-emphasized-pressed: var(--color-slate-800);
-  --bg-accent-subtle: var(--color-blue-50);
-  --bg-accent-subtle-hover: var(--color-blue-100);
-  --bg-accent-subtle-pressed: var(--color-blue-200);
-  --bg-accent: var(--color-blue-100);
-  --bg-accent-hover: var(--color-blue-200);
-  --bg-accent-pressed: var(--color-blue-300);
-  --bg-accent-emphasized: var(--color-blue-600);
-  --bg-accent-emphasized-hover: var(--color-blue-700);
-  --bg-accent-emphasized-pressed: var(--color-blue-800);
+  --bg-disabled: color-mix(in oklab, var(--color-gray-900) 5%, transparent);
+  --bg-neutral-subtle: var(--color-haze-100);
+  --bg-neutral-subtle-hover: var(--color-haze-200);
+  --bg-neutral-subtle-pressed: var(--color-haze-300);
+  --bg-neutral: var(--color-white);
+  --bg-neutral-hover: var(--color-haze-50);
+  --bg-neutral-pressed: var(--color-haze-100);
+  --bg-neutral-emphasized: var(--color-gray-900);
+  --bg-neutral-emphasized-hover: var(--color-gray-800);
+  --bg-neutral-emphasized-pressed: var(--color-gray-700);
+  --bg-accent-subtle: var(--color-indigo-50);
+  --bg-accent-subtle-hover: var(--color-indigo-100);
+  --bg-accent-subtle-pressed: var(--color-indigo-200);
+  --bg-accent: var(--color-indigo-100);
+  --bg-accent-hover: var(--color-indigo-200);
+  --bg-accent-pressed: var(--color-indigo-300);
+  --bg-accent-emphasized: var(--color-indigo-500);
+  --bg-accent-emphasized-hover: var(--color-indigo-600);
+  --bg-accent-emphasized-pressed: var(--color-indigo-700);
   --bg-success-subtle: var(--color-green-50);
   --bg-success-subtle-hover: var(--color-green-100);
   --bg-success-subtle-pressed: var(--color-green-200);
@@ -472,20 +488,20 @@
   --bg-danger-emphasized-hover: var(--color-red-700);
   --bg-danger-emphasized-pressed: var(--color-red-800);
 
-  --card-neutral-subtle: var(--color-slate-50);
+  --card-neutral-subtle: var(--color-haze-50);
   --card-neutral: var(--color-white);
   --card-neutral-emphasized: var(--color-white);
 
   --form-neutral: var(--color-white);
-  --form-neutral-hover: var(--color-slate-50);
-  --form-neutral-pressed: var(--color-slate-100);
+  --form-neutral-hover: var(--color-haze-50);
+  --form-neutral-pressed: var(--color-haze-100);
 
-  --ghost-neutral-hover: color-mix(in oklab, var(--color-slate-950) 5%, transparent);
-  --ghost-neutral-pressed: color-mix(in oklab, var(--color-slate-950) 10%, transparent);
-  --ghost-neutral-active: color-mix(in oklab, var(--color-slate-950) 10%, transparent);
-  --ghost-accent-hover: color-mix(in oklab, var(--color-blue-600) 5%, transparent);
-  --ghost-accent-pressed: color-mix(in oklab, var(--color-blue-600) 10%, transparent);
-  --ghost-accent-active: color-mix(in oklab, var(--color-blue-600) 10%, transparent);
+  --ghost-neutral-hover: color-mix(in oklab, var(--color-gray-900) 5%, transparent);
+  --ghost-neutral-pressed: color-mix(in oklab, var(--color-gray-900) 10%, transparent);
+  --ghost-neutral-active: color-mix(in oklab, var(--color-gray-900) 10%, transparent);
+  --ghost-accent-hover: color-mix(in oklab, var(--color-indigo-500) 5%, transparent);
+  --ghost-accent-pressed: color-mix(in oklab, var(--color-indigo-500) 10%, transparent);
+  --ghost-accent-active: color-mix(in oklab, var(--color-indigo-500) 10%, transparent);
   --ghost-success-hover: color-mix(in oklab, var(--color-green-600) 5%, transparent);
   --ghost-success-pressed: color-mix(in oklab, var(--color-green-600) 10%, transparent);
   --ghost-success-active: color-mix(in oklab, var(--color-green-600) 10%, transparent);
@@ -496,12 +512,12 @@
   --ghost-danger-pressed: color-mix(in oklab, var(--color-red-600) 10%, transparent);
   --ghost-danger-active: color-mix(in oklab, var(--color-red-600) 10%, transparent);
 
-  --fg-disabled: color-mix(in oklab, var(--color-slate-950) 50%, transparent);
-  --fg-neutral-subtle: var(--color-slate-600);
-  --fg-neutral: var(--color-slate-950);
+  --fg-disabled: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
+  --fg-neutral-subtle: var(--color-gray-600);
+  --fg-neutral: var(--color-gray-900);
   --fg-neutral-on-emphasized: var(--color-white);
-  --fg-accent-subtle: var(--color-blue-600);
-  --fg-accent: var(--color-blue-700);
+  --fg-accent-subtle: var(--color-indigo-500);
+  --fg-accent: var(--color-indigo-600);
   --fg-accent-on-emphasized: var(--color-white);
   --fg-success-subtle: var(--color-green-700);
   --fg-success: var(--color-green-800);
@@ -513,13 +529,13 @@
   --fg-danger: var(--color-red-800);
   --fg-danger-on-emphasized: var(--color-white);
 
-  --stroke-disabled: color-mix(in oklab, var(--color-slate-950) 10%, transparent);
-  --stroke-neutral-subtle: color-mix(in oklab, var(--color-slate-950) 10%, transparent);
-  --stroke-neutral: color-mix(in oklab, var(--color-slate-950) 20%, transparent);
-  --stroke-neutral-emphasized: color-mix(in oklab, var(--color-slate-950) 50%, transparent);
-  --stroke-accent-subtle: color-mix(in oklab, var(--color-blue-600) 20%, transparent);
-  --stroke-accent: color-mix(in oklab, var(--color-blue-600) 30%, transparent);
-  --stroke-accent-emphasized: color-mix(in oklab, var(--color-blue-600) 80%, transparent);
+  --stroke-disabled: var(--color-haze-200);
+  --stroke-neutral-subtle: var(--color-haze-100);
+  --stroke-neutral: var(--color-haze-200);
+  --stroke-neutral-emphasized: var(--color-haze-500);
+  --stroke-accent-subtle: color-mix(in oklab, var(--color-indigo-500) 20%, transparent);
+  --stroke-accent: color-mix(in oklab, var(--color-indigo-500) 30%, transparent);
+  --stroke-accent-emphasized: color-mix(in oklab, var(--color-indigo-500) 80%, transparent);
   --stroke-success-subtle: color-mix(in oklab, var(--color-green-700) 20%, transparent);
   --stroke-success: color-mix(in oklab, var(--color-green-700) 30%, transparent);
   --stroke-success-emphasized: color-mix(in oklab, var(--color-green-700) 80%, transparent);
@@ -530,8 +546,8 @@
   --stroke-danger: color-mix(in oklab, var(--color-red-600) 30%, transparent);
   --stroke-danger-emphasized: color-mix(in oklab, var(--color-red-600) 70%, transparent);
 
-  --focus-accent-subtle: color-mix(in oklab, var(--color-blue-600) 20%, transparent);
-  --focus-accent: var(--color-blue-600);
+  --focus-accent-subtle: color-mix(in oklab, var(--color-indigo-500) 20%, transparent);
+  --focus-accent: var(--color-indigo-500);
   --focus-danger: var(--color-red-600);
 
   /* Typography: Desktop */
@@ -614,28 +630,28 @@
 .dark {
   color-scheme: dark;
 
-  --surface: var(--color-slate-950);
+  --surface: var(--color-haze-950);
   --surface-backdrop: color-mix(in oklab, var(--color-black) 70%, transparent);
 
   --bg-disabled: color-mix(in oklab, var(--color-white) 10%, transparent);
-  --bg-neutral-subtle: var(--color-slate-950);
-  --bg-neutral-subtle-hover: var(--color-slate-900);
-  --bg-neutral-subtle-pressed: var(--color-slate-800);
-  --bg-neutral: var(--color-slate-900);
-  --bg-neutral-hover: var(--color-slate-800);
-  --bg-neutral-pressed: var(--color-slate-700);
-  --bg-neutral-emphasized: var(--color-slate-500);
-  --bg-neutral-emphasized-hover: var(--color-slate-600);
-  --bg-neutral-emphasized-pressed: var(--color-slate-700);
-  --bg-accent-subtle: var(--color-blue-950);
-  --bg-accent-subtle-hover: var(--color-blue-900);
-  --bg-accent-subtle-pressed: var(--color-blue-800);
-  --bg-accent: var(--color-blue-900);
-  --bg-accent-hover: var(--color-blue-800);
-  --bg-accent-pressed: var(--color-blue-700);
-  --bg-accent-emphasized: var(--color-blue-600);
-  --bg-accent-emphasized-hover: var(--color-blue-700);
-  --bg-accent-emphasized-pressed: var(--color-blue-800);
+  --bg-neutral-subtle: var(--color-haze-900);
+  --bg-neutral-subtle-hover: var(--color-haze-800);
+  --bg-neutral-subtle-pressed: var(--color-haze-700);
+  --bg-neutral: var(--color-haze-900);
+  --bg-neutral-hover: var(--color-haze-800);
+  --bg-neutral-pressed: var(--color-haze-700);
+  --bg-neutral-emphasized: var(--color-gray-500);
+  --bg-neutral-emphasized-hover: var(--color-gray-600);
+  --bg-neutral-emphasized-pressed: var(--color-gray-700);
+  --bg-accent-subtle: var(--color-indigo-950);
+  --bg-accent-subtle-hover: var(--color-indigo-900);
+  --bg-accent-subtle-pressed: var(--color-indigo-800);
+  --bg-accent: var(--color-indigo-900);
+  --bg-accent-hover: var(--color-indigo-800);
+  --bg-accent-pressed: var(--color-indigo-700);
+  --bg-accent-emphasized: var(--color-indigo-500);
+  --bg-accent-emphasized-hover: var(--color-indigo-600);
+  --bg-accent-emphasized-pressed: var(--color-indigo-700);
   --bg-success-subtle: var(--color-green-950);
   --bg-success-subtle-hover: var(--color-green-900);
   --bg-success-subtle-pressed: var(--color-green-800);
@@ -664,20 +680,20 @@
   --bg-danger-emphasized-hover: var(--color-red-700);
   --bg-danger-emphasized-pressed: var(--color-red-800);
 
-  --card-neutral-subtle: var(--color-slate-950);
-  --card-neutral: var(--color-slate-900);
-  --card-neutral-emphasized: var(--color-slate-800);
+  --card-neutral-subtle: var(--color-haze-950);
+  --card-neutral: var(--color-haze-900);
+  --card-neutral-emphasized: var(--color-haze-800);
 
-  --form-neutral: var(--color-slate-950);
-  --form-neutral-hover: var(--color-slate-900);
-  --form-neutral-pressed: var(--color-slate-800);
+  --form-neutral: var(--color-haze-950);
+  --form-neutral-hover: var(--color-haze-900);
+  --form-neutral-pressed: var(--color-haze-800);
 
   --ghost-neutral-hover: color-mix(in oklab, var(--color-white) 10%, transparent);
   --ghost-neutral-pressed: color-mix(in oklab, var(--color-white) 15%, transparent);
   --ghost-neutral-active: color-mix(in oklab, var(--color-white) 15%, transparent);
-  --ghost-accent-hover: color-mix(in oklab, var(--color-blue-400) 10%, transparent);
-  --ghost-accent-pressed: color-mix(in oklab, var(--color-blue-400) 15%, transparent);
-  --ghost-accent-active: color-mix(in oklab, var(--color-blue-400) 15%, transparent);
+  --ghost-accent-hover: color-mix(in oklab, var(--color-indigo-400) 10%, transparent);
+  --ghost-accent-pressed: color-mix(in oklab, var(--color-indigo-400) 15%, transparent);
+  --ghost-accent-active: color-mix(in oklab, var(--color-indigo-400) 15%, transparent);
   --ghost-success-hover: color-mix(in oklab, var(--color-green-400) 10%, transparent);
   --ghost-success-pressed: color-mix(in oklab, var(--color-green-400) 15%, transparent);
   --ghost-success-active: color-mix(in oklab, var(--color-green-400) 15%, transparent);
@@ -689,11 +705,11 @@
   --ghost-danger-active: color-mix(in oklab, var(--color-red-400) 15%, transparent);
 
   --fg-disabled: color-mix(in oklab, var(--color-white) 50%, transparent);
-  --fg-neutral-subtle: var(--color-slate-400);
-  --fg-neutral: var(--color-slate-50);
+  --fg-neutral-subtle: var(--color-gray-400);
+  --fg-neutral: var(--color-gray-50);
   --fg-neutral-on-emphasized: var(--color-white);
-  --fg-accent-subtle: var(--color-blue-400);
-  --fg-accent: var(--color-blue-300);
+  --fg-accent-subtle: var(--color-indigo-400);
+  --fg-accent: var(--color-indigo-300);
   --fg-accent-on-emphasized: var(--color-white);
   --fg-success-subtle: var(--color-green-400);
   --fg-success: var(--color-green-300);
@@ -706,12 +722,12 @@
   --fg-danger-on-emphasized: var(--color-white);
 
   --stroke-disabled: color-mix(in oklab, var(--color-white) 10%, transparent);
-  --stroke-neutral-subtle: color-mix(in oklab, var(--color-white) 10%, transparent);
-  --stroke-neutral: color-mix(in oklab, var(--color-white) 20%, transparent);
-  --stroke-neutral-emphasized: color-mix(in oklab, var(--color-white) 40%, transparent);
-  --stroke-accent-subtle: color-mix(in oklab, var(--color-blue-400) 20%, transparent);
-  --stroke-accent: color-mix(in oklab, var(--color-blue-400) 30%, transparent);
-  --stroke-accent-emphasized: color-mix(in oklab, var(--color-blue-400) 70%, transparent);
+  --stroke-neutral-subtle: var(--color-haze-800);
+  --stroke-neutral: var(--color-haze-700);
+  --stroke-neutral-emphasized: var(--color-haze-500);
+  --stroke-accent-subtle: color-mix(in oklab, var(--color-indigo-400) 20%, transparent);
+  --stroke-accent: color-mix(in oklab, var(--color-indigo-400) 30%, transparent);
+  --stroke-accent-emphasized: color-mix(in oklab, var(--color-indigo-400) 70%, transparent);
   --stroke-success-subtle: color-mix(in oklab, var(--color-green-400) 20%, transparent);
   --stroke-success: color-mix(in oklab, var(--color-green-400) 30%, transparent);
   --stroke-success-emphasized: color-mix(in oklab, var(--color-green-400) 50%, transparent);
@@ -722,8 +738,8 @@
   --stroke-danger: color-mix(in oklab, var(--color-red-400) 30%, transparent);
   --stroke-danger-emphasized: color-mix(in oklab, var(--color-red-400) 70%, transparent);
 
-  --focus-accent-subtle: color-mix(in oklab, var(--color-blue-400) 30%, transparent);
-  --focus-accent: var(--color-blue-400);
+  --focus-accent-subtle: color-mix(in oklab, var(--color-indigo-400) 30%, transparent);
+  --focus-accent: var(--color-indigo-400);
   --focus-danger: var(--color-red-400);
 }
 
@@ -752,6 +768,122 @@
     --heading-large-letter-spacing: -0.42px;
     --heading-large-line-height: 2.25rem;
   }
+}
+
+/* ===== Theme -> Tailwind classes ===== */
+/* `inline` keeps var(--bg-...) in utilities, so the `.dark` class switches every color at runtime. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-backdrop: var(--surface-backdrop);
+
+  --color-disabled: var(--bg-disabled);
+  --color-neutral-subtle: var(--bg-neutral-subtle);
+  --color-neutral-subtle-hover: var(--bg-neutral-subtle-hover);
+  --color-neutral-subtle-pressed: var(--bg-neutral-subtle-pressed);
+  --color-neutral: var(--bg-neutral);
+  --color-neutral-hover: var(--bg-neutral-hover);
+  --color-neutral-pressed: var(--bg-neutral-pressed);
+  --color-neutral-emphasized: var(--bg-neutral-emphasized);
+  --color-neutral-emphasized-hover: var(--bg-neutral-emphasized-hover);
+  --color-neutral-emphasized-pressed: var(--bg-neutral-emphasized-pressed);
+  --color-accent-subtle: var(--bg-accent-subtle);
+  --color-accent-subtle-hover: var(--bg-accent-subtle-hover);
+  --color-accent-subtle-pressed: var(--bg-accent-subtle-pressed);
+  --color-accent: var(--bg-accent);
+  --color-accent-hover: var(--bg-accent-hover);
+  --color-accent-pressed: var(--bg-accent-pressed);
+  --color-accent-emphasized: var(--bg-accent-emphasized);
+  --color-accent-emphasized-hover: var(--bg-accent-emphasized-hover);
+  --color-accent-emphasized-pressed: var(--bg-accent-emphasized-pressed);
+  --color-success-subtle: var(--bg-success-subtle);
+  --color-success-subtle-hover: var(--bg-success-subtle-hover);
+  --color-success-subtle-pressed: var(--bg-success-subtle-pressed);
+  --color-success: var(--bg-success);
+  --color-success-hover: var(--bg-success-hover);
+  --color-success-pressed: var(--bg-success-pressed);
+  --color-success-emphasized: var(--bg-success-emphasized);
+  --color-success-emphasized-hover: var(--bg-success-emphasized-hover);
+  --color-success-emphasized-pressed: var(--bg-success-emphasized-pressed);
+  --color-warning-subtle: var(--bg-warning-subtle);
+  --color-warning-subtle-hover: var(--bg-warning-subtle-hover);
+  --color-warning-subtle-pressed: var(--bg-warning-subtle-pressed);
+  --color-warning: var(--bg-warning);
+  --color-warning-hover: var(--bg-warning-hover);
+  --color-warning-pressed: var(--bg-warning-pressed);
+  --color-warning-emphasized: var(--bg-warning-emphasized);
+  --color-warning-emphasized-hover: var(--bg-warning-emphasized-hover);
+  --color-warning-emphasized-pressed: var(--bg-warning-emphasized-pressed);
+  --color-danger-subtle: var(--bg-danger-subtle);
+  --color-danger-subtle-hover: var(--bg-danger-subtle-hover);
+  --color-danger-subtle-pressed: var(--bg-danger-subtle-pressed);
+  --color-danger: var(--bg-danger);
+  --color-danger-hover: var(--bg-danger-hover);
+  --color-danger-pressed: var(--bg-danger-pressed);
+  --color-danger-emphasized: var(--bg-danger-emphasized);
+  --color-danger-emphasized-hover: var(--bg-danger-emphasized-hover);
+  --color-danger-emphasized-pressed: var(--bg-danger-emphasized-pressed);
+
+  --color-card-neutral-subtle: var(--card-neutral-subtle);
+  --color-card-neutral: var(--card-neutral);
+  --color-card-neutral-emphasized: var(--card-neutral-emphasized);
+
+  --color-form-neutral: var(--form-neutral);
+  --color-form-neutral-hover: var(--form-neutral-hover);
+  --color-form-neutral-pressed: var(--form-neutral-pressed);
+
+  --color-ghost-neutral-hover: var(--ghost-neutral-hover);
+  --color-ghost-neutral-pressed: var(--ghost-neutral-pressed);
+  --color-ghost-neutral-active: var(--ghost-neutral-active);
+  --color-ghost-accent-hover: var(--ghost-accent-hover);
+  --color-ghost-accent-pressed: var(--ghost-accent-pressed);
+  --color-ghost-accent-active: var(--ghost-accent-active);
+  --color-ghost-success-hover: var(--ghost-success-hover);
+  --color-ghost-success-pressed: var(--ghost-success-pressed);
+  --color-ghost-success-active: var(--ghost-success-active);
+  --color-ghost-warning-hover: var(--ghost-warning-hover);
+  --color-ghost-warning-pressed: var(--ghost-warning-pressed);
+  --color-ghost-warning-active: var(--ghost-warning-active);
+  --color-ghost-danger-hover: var(--ghost-danger-hover);
+  --color-ghost-danger-pressed: var(--ghost-danger-pressed);
+  --color-ghost-danger-active: var(--ghost-danger-active);
+
+  --color-fg-disabled: var(--fg-disabled);
+  --color-fg-neutral-subtle: var(--fg-neutral-subtle);
+  --color-fg-neutral: var(--fg-neutral);
+  --color-fg-neutral-on-emphasized: var(--fg-neutral-on-emphasized);
+  --color-fg-accent-subtle: var(--fg-accent-subtle);
+  --color-fg-accent: var(--fg-accent);
+  --color-fg-accent-on-emphasized: var(--fg-accent-on-emphasized);
+  --color-fg-success-subtle: var(--fg-success-subtle);
+  --color-fg-success: var(--fg-success);
+  --color-fg-success-on-emphasized: var(--fg-success-on-emphasized);
+  --color-fg-warning-subtle: var(--fg-warning-subtle);
+  --color-fg-warning: var(--fg-warning);
+  --color-fg-warning-on-emphasized: var(--fg-warning-on-emphasized);
+  --color-fg-danger-subtle: var(--fg-danger-subtle);
+  --color-fg-danger: var(--fg-danger);
+  --color-fg-danger-on-emphasized: var(--fg-danger-on-emphasized);
+
+  --color-stroke-disabled: var(--stroke-disabled);
+  --color-stroke-neutral-subtle: var(--stroke-neutral-subtle);
+  --color-stroke-neutral: var(--stroke-neutral);
+  --color-stroke-neutral-emphasized: var(--stroke-neutral-emphasized);
+  --color-stroke-accent-subtle: var(--stroke-accent-subtle);
+  --color-stroke-accent: var(--stroke-accent);
+  --color-stroke-accent-emphasized: var(--stroke-accent-emphasized);
+  --color-stroke-success-subtle: var(--stroke-success-subtle);
+  --color-stroke-success: var(--stroke-success);
+  --color-stroke-success-emphasized: var(--stroke-success-emphasized);
+  --color-stroke-warning-subtle: var(--stroke-warning-subtle);
+  --color-stroke-warning: var(--stroke-warning);
+  --color-stroke-warning-emphasized: var(--stroke-warning-emphasized);
+  --color-stroke-danger-subtle: var(--stroke-danger-subtle);
+  --color-stroke-danger: var(--stroke-danger);
+  --color-stroke-danger-emphasized: var(--stroke-danger-emphasized);
+
+  --color-focus-accent-subtle: var(--focus-accent-subtle);
+  --color-focus-accent: var(--focus-accent);
+  --color-focus-danger: var(--focus-danger);
 }
 
 /* ===== Text styles as classes ===== */

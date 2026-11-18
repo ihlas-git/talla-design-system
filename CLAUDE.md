@@ -100,7 +100,7 @@ Rules that follow:
 
 ## Using tokens in code (Tailwind)
 
-Generated mapping (`src/styles/tailwind-theme.css`). `bg-*` tokens drop their prefix, the others keep their scope:
+Generated mapping (the `@theme inline` block in `src/styles/tokens.css`). `bg-*` tokens drop their prefix, the others keep their scope:
 
 | Token | Class |
 | --- | --- |
@@ -128,19 +128,19 @@ Use a token only in the utility that matches what it paints: `bg-*` classes for 
 tokens/figma-snapshot.json     snapshot of Figma variables and styles (source for the generator)
 scripts/build-tokens.mjs       snapshot -> CSS
 scripts/check-tokens.mjs       finds Palette colors and hex in components
-src/styles/tokens.css          GENERATED: @theme (Palette, numbers, shadows), :root, .dark, mobile media query, text classes
-src/styles/tailwind-theme.css  GENERATED: connects Theme tokens to Tailwind classes
+src/styles/tokens.css          GENERATED, the only CSS token file: @theme static (Palette, numbers, shadows), :root (Light),
+                               .dark, mobile media query, @theme inline (Theme -> Tailwind classes), text classes
 src/foundations/               Storybook "Foundations" pages (colors, palette, typography, spacing, radius, shadows)
 ```
 
 ```bash
 npm run storybook      # docs and component playground on :6006
-npm run tokens         # rebuild src/styles/*.css from the snapshot
+npm run tokens         # rebuild src/styles/tokens.css from the snapshot
 npm run check:tokens   # fail if a component uses Palette or hex
 npm run build          # typecheck + production build
 ```
 
-**Never edit `src/styles/tokens.css` or `tailwind-theme.css` by hand.** Change the variable in Figma, refresh `tokens/figma-snapshot.json`, run `npm run tokens`.
+**Never edit `src/styles/tokens.css` by hand.** Change the variable in Figma, refresh `tokens/figma-snapshot.json`, run `npm run tokens`.
 
 ## Adding a component
 

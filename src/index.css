@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 
-/* Generated from Figma by `npm run tokens`. Order matters: tokens first, then the Tailwind mapping. */
+/* Generated from Figma by `npm run tokens`: values and the Tailwind mapping in one file. */
 @import './styles/tokens.css';
-@import './styles/tailwind-theme.css';
 
 @layer base {
   html {

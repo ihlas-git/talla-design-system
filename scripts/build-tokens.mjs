@@ -1,4 +1,4 @@
-// Builds src/styles/tokens.css and src/styles/tailwind-theme.css
+// Builds the single file src/styles/tokens.css (values + the Tailwind mapping)
 // from tokens/figma-snapshot.json (a snapshot of the Figma file "Talla").
 //
 // CSS variable names are computed from the real Figma variable name (the `path` field), never from
@@ -185,8 +185,16 @@ const textClasses = snap.textStyles.map((s) => {
   return { ...s, cls }
 })
 
+// Tailwind name of a Theme token. bg-* tokens drop their scope, the others keep it:
+//   --bg-accent-emphasized -> --color-accent-emphasized -> class bg-accent-emphasized
+//   --fg-neutral-subtle    -> --color-fg-neutral-subtle -> class text-fg-neutral-subtle
+const twName = (cssVar) => {
+  const n = cssVar.slice(2)
+  return n.startsWith('bg-') ? `--color-${n.slice(3)}` : `--color-${n}`
+}
+
 // =====================================================================
-// tokens.css
+// tokens.css  (the only generated CSS file)
 // =====================================================================
 line('/*')
 line(' * GENERATED FILE. Do not edit by hand.')
@@ -194,14 +202,18 @@ line(` * Source: Figma file "${snap.source.file}" (${snap.source.fileKey}), snap
 line(' * Rebuild: npm run tokens')
 line(' *')
 line(' * Variable names are computed from the Figma variable names (Code syntax is only cross-checked).')
-line(' * Palette + Number value  -> @theme')
+line(' * Palette + Number value  -> @theme static (every variable stays in the output)')
 line(' * Theme Light             -> :root,  Theme Dark -> .dark')
+line(' * Theme -> Tailwind        -> @theme inline (--bg-accent-emphasized -> class bg-accent-emphasized)')
 line(' * Typography Desktop      -> :root,  Typography Mobile -> @media (max-width: 767px)')
 line(' * Text styles             -> CSS classes (.heading-large, .body-small ...)')
 line(' * Effect styles           -> --shadow-*')
 line(' *')
 line(' * Components use Theme tokens only. Palette values are never used directly.')
 line(' */')
+line()
+line('/* Dark mode is the `.dark` class on <html>. */')
+line('@custom-variant dark (&:where(.dark, .dark *));')
 line()
 line('/* `static` keeps every variable in the output, even ones no class uses yet. */')
 line('@theme static {')
@@ -275,6 +287,24 @@ for (const [name, v] of typoMobile) line(`    ${name}: ${v};`)
 line('  }')
 line('}')
 line()
+line('/* ===== Theme -> Tailwind classes ===== */')
+line('/* `inline` keeps var(--bg-...) in utilities, so the `.dark` class switches every color at runtime. */')
+line('@theme inline {')
+const seen = new Map()
+lastScope = ''
+for (const t of themeTokens) {
+  const scope = t.name.slice(2).split('-')[0]
+  if (scope !== lastScope) {
+    if (lastScope) line()
+    lastScope = scope
+  }
+  const key = twName(t.name)
+  if (seen.has(key)) fail(`Tailwind name clash: ${key} (${seen.get(key)} and ${t.name})`)
+  seen.set(key, t.name)
+  line(`  ${key}: var(${t.name});`)
+}
+line('}')
+line()
 line('/* ===== Text styles as classes ===== */')
 line('/* In a layer, so Tailwind utilities (e.g. text-fg-neutral) can still combine with them. */')
 line('@layer components {')
@@ -291,49 +321,6 @@ textClasses.forEach((s, i) => {
 })
 line('}')
 fs.writeFileSync(path.join(root, 'src/styles/tokens.css'), out.join('\n') + '\n')
-
-// =====================================================================
-// tailwind-theme.css  (connects Theme tokens to Tailwind utilities)
-// =====================================================================
-// bg-*  tokens: --bg-accent-emphasized -> --color-accent-emphasized -> class bg-accent-emphasized
-// others keep their scope: --fg-neutral-subtle -> --color-fg-neutral-subtle -> class text-fg-neutral-subtle
-const twName = (cssVar) => {
-  const n = cssVar.slice(2)
-  return n.startsWith('bg-') ? `--color-${n.slice(3)}` : `--color-${n}`
-}
-const seen = new Map()
-const tw = []
-const tl = (s = '') => tw.push(s)
-tl('/*')
-tl(' * GENERATED FILE. Do not edit by hand. Rebuild: npm run tokens')
-tl(' *')
-tl(' * Connects Theme tokens to Tailwind. Utilities read the CSS variable at runtime,')
-tl(' * so adding the `dark` class to <html> switches the whole palette.')
-tl(' *')
-tl(' *   --bg-accent-emphasized  ->  bg-accent-emphasized')
-tl(' *   --fg-neutral-subtle     ->  text-fg-neutral-subtle')
-tl(' *   --stroke-neutral        ->  border-stroke-neutral')
-tl(' *   --focus-accent          ->  ring-focus-accent / outline-focus-accent')
-tl(' *   --card-neutral          ->  bg-card-neutral')
-tl(' */')
-tl()
-tl('@custom-variant dark (&:where(.dark, .dark *));')
-tl()
-tl('@theme inline {')
-lastScope = ''
-for (const t of themeTokens) {
-  const scope = t.name.slice(2).split('-')[0]
-  if (scope !== lastScope) {
-    if (lastScope) tl()
-    lastScope = scope
-  }
-  const key = twName(t.name)
-  if (seen.has(key)) fail(`Tailwind name clash: ${key} (${seen.get(key)} and ${t.name})`)
-  seen.set(key, t.name)
-  tl(`  ${key}: var(${t.name});`)
-}
-tl('}')
-fs.writeFileSync(path.join(root, 'src/styles/tailwind-theme.css'), tw.join('\n') + '\n')
 
 console.log(
   `tokens.css: palette ${paletteNamed.length} ` +
